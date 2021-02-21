@@ -19,15 +19,11 @@ public class FinalVariableRemovalProcessor extends AbstractProcessor<CtVariable<
 
     @Override
     public void process(CtVariable<?> variable) {
-
-        // Todo: Get all variables declared inside the Method.
-        // Todo: Filter out only those with final keywords.
-        // Todo: Replace the declaration of variables without final keywords.
   
         if (variable.isFinal()) {
             // I need to get references of this variable
             // if any single final usage found dont remove
-            //else remove
+            // else remove
             final CtVariableReference<?> reference = variable.getReference();
           //  if(reference.isParentInitialized())
             variable.removeModifier(ModifierKind.FINAL);

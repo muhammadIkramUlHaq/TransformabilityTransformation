@@ -7,7 +7,7 @@ public class Runner {
         final String[] configuration = {
                 "-i", "src/main/resources/project/",
                 "-o", "target/transformed/",
-                "-p", "se.kth.processor.FinalVariableRemovalProcessor",
+                "-p", "se.kth.processor.FinalClassRemovalProcessor",
                 "--compile"
         };
 

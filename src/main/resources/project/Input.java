@@ -1,3 +1,4 @@
+/*
 public class Task {
     private final int a = 9;
     private final int b = 10;
@@ -13,4 +14,4 @@ public class Task {
     public void m1(float f) {
         System.out.println("hello world");
     }
-}
+}*/

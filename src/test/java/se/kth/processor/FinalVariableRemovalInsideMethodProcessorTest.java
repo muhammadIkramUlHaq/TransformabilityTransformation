@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FinalVariableRemovalInsideMethodProcessorTest {
 
     FinalVariableRemovalInsideMethodProcessor finalVariableRemovalInsideMethodProcessor = new FinalVariableRemovalInsideMethodProcessor();
-
+               
     @org.junit.jupiter.api.Test
     void process() {
         
