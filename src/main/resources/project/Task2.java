@@ -1,22 +1,20 @@
-/*
-public class Task1 {
-    private final int a = 9;
+public class Task2 {
     private final int b = 10;
     private int c;
 
-    public void m(int t) {
+    public void method3(int t) {
         final int m = 10;
         final int lm = 19;
         c = a;
     }
 
-    public final void m1(final int t) {
+    public final void method4(final int t) {
         final int m = 10;
         final int lm = 19;
         c = a;
     }
 
-    public void m1(float f) {
+    public void method5(float f) {
         System.out.println("hello world");
     }
-}*/
+}

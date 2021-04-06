@@ -15,7 +15,7 @@ class FinalClassRemovalProcessorTest {
     void testClassContainsFinalKeywordRemovedSuccess() {
         
         final SpoonAPI spoon = new Launcher();
-        spoon.addInputResource("src/test/java/files/Input.java");
+        spoon.addInputResource("src/test/java/files/Task1.java");
         spoon.run();
 
         final CtElement objectCtType = spoon.getFactory().Type().get(Input.class);
@@ -28,7 +28,7 @@ class FinalClassRemovalProcessorTest {
     void testClassNotContainsFinalKeywordNoChangesSuccess() {
 
         final SpoonAPI spoon = new Launcher();
-        spoon.addInputResource("src/test/java/files/Input1.java");
+        spoon.addInputResource("src/test/java/files/Task2.java");
         spoon.run();
 
         final CtElement objectCtType = spoon.getFactory().Type().get(Input1.class);
