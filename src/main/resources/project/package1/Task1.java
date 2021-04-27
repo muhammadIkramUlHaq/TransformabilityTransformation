@@ -1,6 +1,6 @@
 
 public class Task1 extends Task2 {
-    public final static int a = 16;
+    final static int a = 16;
     private int b = 10;
     private int c;
 

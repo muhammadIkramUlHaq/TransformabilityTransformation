@@ -5,9 +5,9 @@ import spoon.Launcher;
 public class Runner {
     public static void main(String[] args) {
         final String[] configuration = {
-                "-i", "src/main/resources/project/",
+                "-i", "src/main/java/se/kth/resources/",
                 "-o", "target/transformed/",
-                "-p", "se.kth.processor.FinalVariableRemovalProcessor",
+                "-p", "se.kth.processor.FinalClassRemovalProcessor",
                 "--compile"
         };
 

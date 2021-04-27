@@ -1,6 +1,6 @@
 
 public final class Task3 {
-    private final int a = 9;
+    private final int a3 = 9;
     private final int b = 10;
     private int c;
 
