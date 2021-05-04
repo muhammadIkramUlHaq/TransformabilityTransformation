@@ -5,10 +5,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.ClassFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static se.kth.shared.Utility.getClassName;
+import static se.kth.shared.Utility.getSubclassList;
 
 /**
  * Final Method Removal
@@ -28,22 +29,13 @@ public class FinalMethodRemovalProcessor extends AbstractProcessor<CtMethod<?>> 
         final String currentMethodName = method.getSimpleName();
 
         final CtClass currentClass = method.getParent(ctElement -> ctElement instanceof CtType);
-        final String currentClassName = currentClass.getSimpleName();
+        final String currentClassName =  getClassName(currentClass);
 
         // Get all the classes in the project
-        final ClassFactory classFactory = getFactory().Class();
-        final List<CtType<?>> allClasses = classFactory.getAll();
+        final List<CtType<?>> allClasses = getFactory().Class().getAll();
 
-        List<CtType> subClasses = new ArrayList<>();
-
-        for (CtType ctClass : allClasses
-        ) {
-            if (ctClass.getSuperclass() != null) {
-                if (ctClass.getSuperclass().getSimpleName().equals(currentClassName))
-                    subClasses.add(ctClass);
-            }
-        }
-
+        List<CtType> subClasses = getSubclassList(currentClassName, allClasses);
+        
         int methodOverrideCount = 0;
 
         // I need to get references of this method

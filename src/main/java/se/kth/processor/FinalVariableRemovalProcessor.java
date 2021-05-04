@@ -4,13 +4,11 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.*;
-import spoon.reflect.factory.ClassFactory;
-import spoon.reflect.factory.PackageFactory;
-import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static se.kth.shared.Utility.getClassName;
+import static se.kth.shared.Utility.getSubclassList;
 
 /**
  * Final Variable Removal
@@ -27,40 +25,25 @@ public class FinalVariableRemovalProcessor extends AbstractProcessor<CtClass<?>>
     @Override
     public void process(CtClass<?> classDef) {
 
-        final String currentClassName = classDef.getSimpleName();
-      
+        final String currentClassName = getClassName(classDef);
+        final CtPackage currentPackage = getPackage(classDef);
+
         // Get all the classes in the project
-        final ClassFactory classFactory = getFactory().Class();
-        final List<CtType<?>> allClasses = classFactory.getAll();
-
-        List<CtType> subClasses = new ArrayList<>();
-        
-        for (CtType ctClass : allClasses
-        ) {
-                  if (ctClass.getSuperclass() != null) {
-                      if(ctClass.getSuperclass().getSimpleName().equals(currentClassName))
-                          subClasses.add(ctClass);
-                  }
-        }
-
-        // Get all the package in the project
-        final PackageFactory packageFactory = getFactory().Package();
-        // Skip top level packages
-        final List<CtPackage> ctPackages = packageFactory.getAll()
-                .stream()
-                .filter(ctPackage -> ctPackage.getPackages().size() == 0)
-                .collect(Collectors.toList());
+        final List<CtType<?>> allClasses = getFactory().Class().getAll();
+        // Get all Subclasses for Given Class
+        List<CtType> subClasses = getSubclassList(currentClassName, allClasses);
 
         // Get all variables in this class
         final List<CtVariable> ctVariables = classDef.getElements(ctElement -> ctElement instanceof CtVariable);
+        // Get all fields in this class
         final List<CtField<?>> fields = classDef.getFields();
-
+        // Get all Assignments in this class
         final List<CtAssignment> ctAssignments = classDef.getElements(ctElement -> ctElement instanceof CtAssignment);
 
         for (CtVariable variable : ctVariables
         ) {
 
-            int assigned = 0;
+            int variableAssignmentCount = 0;
             // Check whether the field is private or public
             final boolean isClassField = fields.contains(variable);
             final boolean isPrivateVariable = isClassField && variable.isPrivate();
@@ -68,7 +51,6 @@ public class FinalVariableRemovalProcessor extends AbstractProcessor<CtClass<?>>
             final boolean isProtectedVariable = isClassField && variable.isProtected();
             final boolean isDefaultVariable = isClassField && !isPrivateVariable && !isPublicVariable && !isProtectedVariable;
             final boolean isBlockVariable = !fields.contains(variable);
-
 
             // Already Initialized
             final CtExpression variableDefaultExpression = variable.getDefaultExpression();
@@ -79,80 +61,61 @@ public class FinalVariableRemovalProcessor extends AbstractProcessor<CtClass<?>>
                 // else remove
 
                 if (isPrivateVariable) {
-                    for (CtAssignment ctAssignment : ctAssignments
-                    ) {
-                        final String assignedVariable = ctAssignment.getAssigned().toString();
-                        if (assignedVariable.equals(variable.getSimpleName())) {
-                            assigned++;
-                        }
-                    }
+                    variableAssignmentCount = getVariableAssignmentCount(ctAssignments, variable, variableAssignmentCount);
                 } else if (isPublicVariable) {
                     for (CtType ctClass : allClasses) {
                         final List<CtAssignment> variableAssignments = ctClass.getElements(ctElement -> ctElement instanceof CtAssignment);
-                        for (CtAssignment ctAssignment : variableAssignments
-                        ) {
-                            final String assignedVariable = ctAssignment.getAssigned().toString();
-                            if (assignedVariable.equals(variable.getSimpleName())) {
-                                assigned++;
-                            }
-                        }
+                        variableAssignmentCount = getVariableAssignmentCount(variableAssignments, variable, variableAssignmentCount);
                     }
                 } else if (isProtectedVariable) {
-                    for (CtPackage ctPackage : ctPackages) {
-                        final List<CtClass> allClassesInsidePackage = ctPackage.getElements(ctElement -> ctElement instanceof CtClass);
-                        for (CtClass ctClass : allClassesInsidePackage) {
-                            final List<CtAssignment> variableAssignments = ctClass.getElements(ctElement -> ctElement instanceof CtAssignment);
-                            for (CtAssignment ctAssignment : variableAssignments
-                            ) {
-                                final String assignedVariable = ctAssignment.getAssigned().toString();
-                                if (assignedVariable.equals(variable.getSimpleName())) {
-                                    assigned++;
-                                }
-                            }
-                        }
-                    }
+
+                    // Check all subclasses Same Package and Different Package
                     for (CtType ctClass : subClasses) {
                         final List<CtAssignment> variableAssignments = ctClass.getElements(ctElement -> ctElement instanceof CtAssignment);
-                        for (CtAssignment ctAssignment : variableAssignments
-                        ) {
-                            final String assignedVariable = ctAssignment.getAssigned().toString();
-                            if (assignedVariable.equals(variable.getSimpleName())) {
-                                assigned++;
-                            }
-                        }
+                        variableAssignmentCount = getVariableAssignmentCount(variableAssignments, variable, variableAssignmentCount);
                     }
+
+                    // Check only Same Package classes which are not subclass
+                    variableAssignmentCount = getVariableAssigmentCountForPackage(currentPackage, variable, variableAssignmentCount);
+
                 } else if (isDefaultVariable) {
-                    for (CtPackage ctPackage : ctPackages) {
-                        final List<CtClass> allClassesInsidePackage = ctPackage.getElements(ctElement -> ctElement instanceof CtClass);
-                        for (CtClass ctClass : allClassesInsidePackage) {
-                            final List<CtAssignment> variableAssignments = ctClass.getElements(ctElement -> ctElement instanceof CtAssignment);
-                            for (CtAssignment ctAssignment : variableAssignments
-                            ) {
-                                final String assignedVariable = ctAssignment.getAssigned().toString();
-                                if (assignedVariable.equals(variable.getSimpleName())) {
-                                    assigned++;
-                                }
-                            }
-                        }
-                    }
+                    // I need to restrict this to only same package where class belongs
+                    variableAssignmentCount = getVariableAssigmentCountForPackage(currentPackage, variable, variableAssignmentCount);
+
                 } else if (isBlockVariable) {
                     // Check final Block Variable
-                    for (CtAssignment ctAssignment : ctAssignments
-                    ) {
-                        final String assignedVariable = ctAssignment.getAssigned().toString();
-                        if (assignedVariable.equals(variable.getSimpleName())) {
-                            assigned++;
-                        }
-                    }
+                    variableAssignmentCount = getVariableAssignmentCount(ctAssignments, variable, variableAssignmentCount);
                 }
                 // apply filter here
-                if (assigned == 0 || (variableDefaultExpression == null && assigned == 1)) {
+                if (variableAssignmentCount == 0 || (variableDefaultExpression == null && variableAssignmentCount == 1)) {
                     variable.removeModifier(ModifierKind.FINAL);
                 }
             }
-
         }
+    }
 
+    private static int getVariableAssigmentCountForPackage(CtPackage currentPackage, CtVariable variable, int variableAssignmentCount) {
+        final List<CtClass> allClassesInsidePackage = currentPackage.getElements(ctElement -> ctElement instanceof CtClass);
+        for (CtClass ctClass : allClassesInsidePackage) {
+            final List<CtAssignment> variableAssignments = ctClass.getElements(ctElement -> ctElement instanceof CtAssignment);
+            variableAssignmentCount = getVariableAssignmentCount(variableAssignments, variable, variableAssignmentCount);
+        }
+        return variableAssignmentCount;
+    }
+
+    private CtPackage getPackage(CtClass<?> classDef) {
+        return classDef.getPackage();
+    }
+
+    private static int getVariableAssignmentCount(List<CtAssignment> ctAssignments, CtVariable variable, int assigned) {
+        for (CtAssignment ctAssignment : ctAssignments
+        ) {
+            final String assignedVariable = ctAssignment.getAssigned().toString();
+            if (assignedVariable.equals(variable.getSimpleName())) {
+                assigned++;
+            }
+        }
+        return assigned;
     }
 
 
