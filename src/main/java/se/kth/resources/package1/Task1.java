@@ -1,8 +1,8 @@
 package se.kth.resources.package1;
 
 public class Task1 extends Task2 {
-    final public static int a = 16;
-    final protected static int b = 10;
+    public final static int a = 16;
+    protected final static int b = 10;
     private int c;
     
     public final int methodTask1(final int t) {

@@ -1,4 +1,6 @@
-package files.package1;
+package files.variables.package1;
+
+import files.variables.package1.Test3Variable;
 
 public class Test {
     

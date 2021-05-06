@@ -1,4 +1,4 @@
-package files.package1;
+package files.variables.package1;
 
 public class Test4Variable {
     final protected static int b = 10;

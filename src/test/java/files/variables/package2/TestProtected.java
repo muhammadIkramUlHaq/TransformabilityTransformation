@@ -1,6 +1,6 @@
-package files.package2;
+package files.variables.package2;
 
-import files.package1.Test4Variable;
+import files.variables.package1.Test4Variable;
 
 public class TestProtected extends Test4Variable{
     

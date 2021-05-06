@@ -1,4 +1,4 @@
-package files;
+package files.variables;
 
 public class Test2Variable {
     public final int method1(int t) {
