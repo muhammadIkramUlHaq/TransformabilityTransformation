@@ -1,4 +1,4 @@
-package se.kth.processor;
+package se.kth.processor.finals;
 import files.classes.Test1Class;
 import files.classes.Test2Class;
 import org.junit.jupiter.api.Test;

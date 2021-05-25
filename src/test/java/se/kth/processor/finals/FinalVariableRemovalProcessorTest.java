@@ -1,4 +1,4 @@
-package se.kth.processor;
+package se.kth.processor.finals;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;

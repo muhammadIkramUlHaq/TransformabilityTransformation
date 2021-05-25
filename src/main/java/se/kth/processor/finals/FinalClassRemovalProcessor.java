@@ -1,4 +1,4 @@
-package se.kth.processor;
+package se.kth.processor.finals;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
