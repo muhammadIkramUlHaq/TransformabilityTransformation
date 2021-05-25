@@ -10,9 +10,4 @@ public final class Task4 {
         final int lm = 19;
         c = a4;
     }
-
-    public void method9(float f) {
-        int f1 = c;
-        System.out.println("f1 = " + f1);
-    }
 }

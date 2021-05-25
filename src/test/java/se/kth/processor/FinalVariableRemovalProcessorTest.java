@@ -68,7 +68,7 @@ public class FinalVariableRemovalProcessorTest {
         toPrint.add(element);
         prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
         String result = prettyPrinter.getResult();
-        assertTrue(result.indexOf("final int m;") > 0);
+        assertTrue(result.indexOf("int m;") > 0);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class FinalVariableRemovalProcessorTest {
         spoon.run();
         PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
 
-        CtType element = spoon.getFactory().Class().getAll().get(4);
+        CtType element = spoon.getFactory().Class().getAll().get(5);
         List<CtType<?>> toPrint = new ArrayList<>();
         toPrint.add(element);
         prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
@@ -124,7 +124,7 @@ public class FinalVariableRemovalProcessorTest {
         spoon.run();
         PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
 
-        CtType element = spoon.getFactory().Class().getAll().get(5);
+        CtType element = spoon.getFactory().Class().getAll().get(6);
         List<CtType<?>> toPrint = new ArrayList<>();
         toPrint.add(element);
         prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
@@ -145,13 +145,35 @@ public class FinalVariableRemovalProcessorTest {
         spoon.run();
         PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
 
-        CtType element = spoon.getFactory().Class().getAll().get(5);
+        CtType element = spoon.getFactory().Class().getAll().get(6);
         List<CtType<?>> toPrint = new ArrayList<>();
         toPrint.add(element);
         prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
         String result = prettyPrinter.getResult();
         
         assertTrue(result.contains("static int c = 10"));
+    }
+
+    @Test
+    public void testInnerClassWithinPackageContainsFinalKeywordRemovedSuccess() {
+
+        String pathResource = "src/test/java/files/variables/TestInnerClass.java";
+
+        Launcher spoon = new Launcher();
+        spoon.setArgs(new String[]{"--with-imports"});
+        spoon.addProcessor(new FinalVariableRemovalProcessor());
+        spoon.addInputResource(pathResource);
+        spoon.run();
+        PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
+
+        CtType element = spoon.getFactory().Class().getAll().get(0);
+        List<CtType<?>> toPrint = new ArrayList<>();
+        toPrint.add(element);
+        prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+        String result = prettyPrinter.getResult();
+             System.out.println(result);
+        assertTrue(result.contains("static Label label = new Label()"));
+        assertTrue(result.contains("static final int count1 = 0;"));
     }
     
 }

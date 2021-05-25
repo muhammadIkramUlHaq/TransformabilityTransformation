@@ -1,9 +1,5 @@
 package se.kth.resources.package1;
 
-import static se.kth.resources.package1.Task1.a;
-import static se.kth.resources.package1.Task2.f0;
-import static se.kth.resources.package1.Task1.b;
-
 public final class Task3 extends Task1 {
     private final int a3 = 9;
     private final int b1 = 10;
