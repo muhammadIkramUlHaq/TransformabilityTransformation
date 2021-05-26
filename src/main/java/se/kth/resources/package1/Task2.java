@@ -15,7 +15,7 @@ public class Task2 extends Task8 {
         this.c = a + m;
     }
 
-    public final void method4(final int t) {
+    public void method4(final int t) {
         final int m = 10;
         final int lm = 19;
         this.c = a;
