@@ -1,8 +1,19 @@
 package se.kth.resources;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public class TestInnerClass {
+
+
+    public enum Tone {
+
+        SUNDAY;
+
+        private boolean sharpable;
+        private static final java.util.Map<java.lang.Byte, String> BY_DATA = new HashMap<>();
+    };
+    
     static final Label label = new Label();
     private interface HelloWorld {
         public void greet();

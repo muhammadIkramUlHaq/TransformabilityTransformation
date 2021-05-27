@@ -11,12 +11,10 @@ public class FinalCountRunner {
     public static void main(String[] args) {
         final String[] configuration1 = {
                 "-i", "target/transformed/se/kth/resources/",
-                "--compile"
         };
 
         final String[] configuration = {
                 "-i", "src/main/java/se/kth/resources/",
-                "--compile"
         };
         
 
@@ -33,7 +31,8 @@ public class FinalCountRunner {
 
         final long finalMethodCounter = allClasses.stream()
                 .flatMap(ctType -> ctType.getMethods()
-                        .stream().filter(ctMethod -> ctMethod.isFinal()))
+                        .stream()
+                        .filter(ctMethod -> ctMethod.isFinal()))
                 .collect(Collectors.toList())
                 .stream().count();
         System.out.println("Final Methods Count = " + finalMethodCounter);
@@ -41,13 +40,10 @@ public class FinalCountRunner {
         final long finalVariableCounter = allClasses.stream()
                 .flatMap(ctType -> {
                     final List<CtVariable> elements = ctType.getElements(ctElement -> ctElement instanceof CtVariable);
-                    return elements.stream().filter(variable -> variable.isFinal());
+                    return elements.stream().filter(variable -> variable.isFinal() && variable.toString().contains("final"));
                 }).collect(Collectors.toList())
                 .stream().count();
         System.out.println("Final Variables Count = " + finalVariableCounter);
-
-
-
 
     }
 
