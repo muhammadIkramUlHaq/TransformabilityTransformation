@@ -10,20 +10,57 @@ import java.util.stream.Collectors;
 public class FinalCountRunner {
     public static void main(String[] args) {
         final String[] configuration1 = {
-                "-i", "target/transformed/se/kth/resources/",
+                "--with-imports",
+                "-i", "target/transformed/classes/",
+        };
+
+        final String[] configuration2 = {
+                "--with-imports",
+                "-i", "target/transformed/methods/",
+        };
+
+        final String[] configuration3 = {
+                "--with-imports",
+                "-i", "target/transformed/variables/",
         };
 
         final String[] configuration = {
-                "-i", "src/main/java/se/kth/resources/",
+                "--with-imports",
+                "-i", "projects/joda-time-master/src/main/java/",
         };
         
 
         final Launcher launcher = new Launcher();
         launcher.setArgs(configuration);
         launcher.run();
-        
-        final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
 
+        final Launcher launcherTransformedClasses = new Launcher();
+        launcherTransformedClasses.setArgs(configuration1);
+        launcherTransformedClasses.run();
+
+        final Launcher launcherTransformedMethods = new Launcher();
+        launcherTransformedMethods.setArgs(configuration2);
+        launcherTransformedMethods.run();
+
+        final Launcher launcherTransformedVariables = new Launcher();
+        launcherTransformedVariables.setArgs(configuration3);
+        launcherTransformedVariables.run();
+
+        final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allClasses);
+
+        final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
+
+        final List<CtType<?>> allClassesAfterFinalMethodRemoval = launcherTransformedMethods.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allClassesAfterFinalMethodRemoval);
+
+        final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);
+    }
+
+    private static void getCountsForFinalRemoval(List<CtType<?>> allClasses) {
+        System.out.println("Total Number of Classes =" + allClasses.size() );
         final long finalClassCounter = allClasses
                 .stream()
                 .filter(ctType -> ctType.isFinal()).count();
@@ -44,7 +81,6 @@ public class FinalCountRunner {
                 }).collect(Collectors.toList())
                 .stream().count();
         System.out.println("Final Variables Count = " + finalVariableCounter);
-
     }
 
 }
