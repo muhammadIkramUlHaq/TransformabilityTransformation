@@ -2,27 +2,26 @@ package se.kth;
 
 import spoon.Launcher;
 
-public class Runner {
+public class FinalRemovalRunner {
     public static void main(String[] args) {
-        String projectName = "joda-time-master";
+        String projectName = "DiskLruCache";
         final String[] configurationClasses;
         configurationClasses = new String[]{
-                "--with-imports",
-                "-i", "projects/"+ projectName + "/src/main/java/",
+                "-i", "repos/"+ projectName + "/src/main/java/",
                 "-o", "target/transformed/classes/",
                 "-p", "se.kth.processor.finals.FinalClassRemovalProcessor" 
         };
 
         final String[] configurationMethods = {
                 "--with-imports",
-                "-i", "projects/"+ projectName + "/src/main/java/",
+                "-i", "repos/"+ projectName + "/src/main/java/",
                 "-o", "target/transformed/methods/",
                 "-p", "se.kth.processor.finals.FinalMethodRemovalProcessor"
         };
 
         final String[] configurationVariables = {
                 "--with-imports",
-                "-i", "projects/"+ projectName + "/src/main/java/",
+                "-i", "repos/"+ projectName + "/src/main/java/",
                 "-o", "target/transformed/variables/",
                 "-p", "se.kth.processor.finals.FinalVariableRemovalProcessor"
         };

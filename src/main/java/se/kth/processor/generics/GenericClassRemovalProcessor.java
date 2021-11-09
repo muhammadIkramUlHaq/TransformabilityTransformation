@@ -1,15 +1,15 @@
-package se.kth.processor.finals;
+package se.kth.processor.generics;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.ModifierKind;
 
 /**
- * Final Class Removal
+ * Generic Class Removal
  *
  * @author Muhammad Ikram Ul Haq
  */
-public class FinalClassRemovalProcessor extends AbstractProcessor<CtClass<?>> {
+public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> {
 
     @Override
     public boolean isToBeProcessed(CtClass<?> classDec) {
@@ -18,7 +18,9 @@ public class FinalClassRemovalProcessor extends AbstractProcessor<CtClass<?>> {
 
     @Override
     public void process(CtClass<?> classDef) {
-      // Always remove final keyword in case of class
+
+        classDef.getFormalCtTypeParameters().get(0);
+        // Always remove final keyword in case of class
         classDef.removeModifier(ModifierKind.FINAL);
     }
 }
