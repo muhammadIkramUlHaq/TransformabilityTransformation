@@ -4,7 +4,18 @@ import spoon.Launcher;
 
 public class GenericRemovalRunner {
     public static void main(String[] args) {
-        String projectName = "DiskLruCache";
+        final String[] configurationClasses;
+        configurationClasses = new String[]{
+                "-i", "src/main/java/se/kth/resources/package3",
+                "-o", "target/transformed/methods/",
+                "-p", "se.kth.processor.generics.GenericMethodRemovalProcessor"
+        };
+
+        final Launcher launcherGenericClassesRemoval = new Launcher();
+        launcherGenericClassesRemoval.setArgs(configurationClasses);
+        launcherGenericClassesRemoval.run();
+
+      /*  String projectName = "DiskLruCache";
         
         final String[] configurationClasses;
         configurationClasses = new String[]{
@@ -39,6 +50,6 @@ public class GenericRemovalRunner {
         launcherGenericVariablesRemoval.setArgs(configurationVariables);
         launcherGenericVariablesRemoval.run();
 
-        System.out.println(" Successfully Run All processor on complete porject");
+        System.out.println(" Successfully Run All processor on complete porject");*/
     }
 }
