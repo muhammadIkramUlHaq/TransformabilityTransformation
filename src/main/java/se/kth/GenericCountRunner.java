@@ -2,14 +2,15 @@ package se.kth;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FinalCountRunner {
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
+public class GenericCountRunner {
+
     public static void main(String[] args) {
 
         String projectName = "DiskLruCache";
@@ -38,7 +39,7 @@ public class FinalCountRunner {
         final Launcher launcher = new Launcher();
         launcher.setArgs(configuration);
         launcher.run();
-
+/*
         final Launcher launcherTransformedClasses = new Launcher();
         launcherTransformedClasses.setArgs(configuration1);
         launcherTransformedClasses.run();
@@ -49,11 +50,11 @@ public class FinalCountRunner {
 
         final Launcher launcherTransformedVariables = new Launcher();
         launcherTransformedVariables.setArgs(configuration3);
-        launcherTransformedVariables.run();
+        launcherTransformedVariables.run();*/
 
         final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClasses);
-
+        getCountsForGenericRemoval(allClasses);
+/*
         final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
 
@@ -61,10 +62,10 @@ public class FinalCountRunner {
         getCountsForFinalRemoval(allClassesAfterFinalMethodRemoval);
 
         final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);
+        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);*/
     }
 
-    private static void getCountsForFinalRemoval(List<CtType<?>> allClasses) {
+    private static void getCountsForGenericRemoval(List<CtType<?>> allClasses) {
         final long totalCtStatementsCount = allClasses.stream()
                 .flatMap(ctType -> {
                     final List<CtStatement> elements = ctType.getElements(ctElement -> ctElement instanceof CtStatement);
@@ -74,12 +75,12 @@ public class FinalCountRunner {
 
         System.out.println("Total Number of Classes =" + allClasses.size());
         System.out.println("Total Number of CtStatements = " + totalCtStatementsCount);
-        final long finalClassCounter = allClasses
+        final long genericClassCounter = allClasses
                 .stream()
-                .filter(ctType -> ctType.isFinal()).count();
-        System.out.println("Final Classes Count = " + finalClassCounter);
+                .filter(ctType -> isNotEmpty(ctType.getFormalCtTypeParameters())).count();
+        System.out.println("Generic Classes Count = " + genericClassCounter);
 
-        final long finalMethodCounter = allClasses.stream()
+      /*  final long finalMethodCounter = allClasses.stream()
                 .flatMap(ctType -> ctType.getMethods()
                         .stream()
                         .filter(ctMethod -> ctMethod.isFinal()))
@@ -93,7 +94,7 @@ public class FinalCountRunner {
                     return elements.stream().filter(variable -> variable.isFinal() && variable.toString().contains("final"));
                 }).collect(Collectors.toList())
                 .stream().count();
-        System.out.println("Final Variables Count = " + finalVariableCounter);
+        System.out.println("Final Variables Count = " + finalVariableCounter);*/
 
 
     }

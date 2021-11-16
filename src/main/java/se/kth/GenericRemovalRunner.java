@@ -6,9 +6,9 @@ public class GenericRemovalRunner {
     public static void main(String[] args) {
         final String[] configurationClasses;
         configurationClasses = new String[]{
-                "-i", "src/main/java/se/kth/resources/package3",
-                "-o", "target/transformed/methods/",
-                "-p", "se.kth.processor.generics.GenericMethodRemovalProcessor"
+                "-i", "src/main/java/se/kth/resources",
+                "-o", "target/transformed/classes/",
+                "-p", "se.kth.processor.generics.GenericClassRemovalProcessor"
         };
 
         final Launcher launcherGenericClassesRemoval = new Launcher();

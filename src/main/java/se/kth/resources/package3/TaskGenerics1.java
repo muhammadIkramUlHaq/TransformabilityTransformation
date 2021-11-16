@@ -11,7 +11,8 @@ public class TaskGenerics1<T> {
     public void setKey(T key) { this.key = key; }
     public T getKey()   { return key; }
 
-    public void method2(float f) {
+    public int method2(float f) {
         System.out.println("hello world");
+        return 0;
     }
 }
