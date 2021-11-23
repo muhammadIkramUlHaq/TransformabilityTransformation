@@ -4,24 +4,17 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class TestInnerClass {
-
-
     public enum Tone {
-
         SUNDAY;
-
         private boolean sharpable;
         private static final java.util.Map<java.lang.Byte, String> BY_DATA = new HashMap<>();
     };
-    
     static final Label label = new Label();
     private interface HelloWorld {
         public void greet();
         public void greetSomeone(String someone);
     }
-
     private int count = 1;
-    
     class EnglishGreeting implements HelloWorld {
         String name = "world";
         final static int count1 = 0;
