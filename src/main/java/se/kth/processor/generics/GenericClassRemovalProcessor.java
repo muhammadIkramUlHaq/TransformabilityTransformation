@@ -6,6 +6,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +32,8 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
         final String currentClassName = classDef.getSimpleName();
         final String currentClassNameWithoutGenericParameter = classDef.getQualifiedName();
 
+        // this includes classes as well as interfaces
         final List<CtType<?>> allClasses = getFactory().Class().getAll();
-        final List<CtType<?>> allInterfaces = getFactory().Interface().getAll();
 
         final List<CtType<?>> allClassesExceptCurrent = allClasses
                 .stream()
@@ -45,8 +46,7 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
                 .collect(Collectors.toList());
 
         final Set<CtTypeReference<?>> superInterfaces = classDef.getSuperInterfaces();
-        System.out.println("Class = " + currentClassName + "  has " + superInterfaces.size() + " Interfaces.");
-
+        
         final List<CtTypeParameter> formalCtTypeParameters = classDef.getFormalCtTypeParameters();
 
         final List<CtVariable> variableTypes = classDef.getElements(ctElement -> ctElement instanceof CtVariable);
@@ -72,33 +72,6 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
             iterator.remove();
             classDef.removeFormalCtTypeParameter(ctTypeParameter);
         }
-
-        // Find references of generic class in all interfaces and remove generic from it
-        /*allInterfaces.forEach(
-                interfaceIns -> {
-                    final List<CtElement> elements = interfaceIns.getElements(ctElement -> ctElement instanceof CtStatement);
-
-                    final List<CtVariable> variables = interfaceIns.getElements(ctElement -> ctElement instanceof CtVariable);
-
-                    for (CtVariable ctVariable : variables
-                    ) {
-                        // variable assignment used within method Parameter & Declaration
-                        if (ctVariable.getType().getSimpleName().equals(currentClassName)) {
-                            ctVariable.setType(getFactory().createReference(currentClassNameWithoutGenericParameter));
-                        }
-                    }
-
-                    final Set<CtMethod<?>> methods1 = interfaceIns.getMethods();
-
-                    for (CtMethod ctMethod : methods1
-                    ) {
-                        if (ctMethod.getType().getSimpleName().equals(currentClassName)) {
-                            ctMethod.setType(getFactory().createReference(currentClassNameWithoutGenericParameter));
-                        }
-                    }
-
-                }
-        );*/
 
         // Find references of generic class from all classes and remove generic from it
         allClasses.forEach(
@@ -136,27 +109,14 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
         );
         // Unbounded Cases
 
-      /*  classDef.getSuperInterfaces().stream().map(ctTypeReference -> {
-            final CtInterface<?> superInterface = (CtInterface<?>) ctTypeReference.clone();
-            final String superInterfaceNameWithoutGeneric = superInterface.toString().split("<")[0];
-            System.out.println("super Interface 1 = " + superInterface.getQualifiedName());
-            final CtTypeReference<Object> reference = getFactory().createReference(superInterfaceNameWithoutGeneric);
-            superInterface.removeFormalCtTypeParameter(superInterface.getFormalCtTypeParameters().get(0));
-
-
-            System.out.println("super Interface 0 = " + superInterface.getDeclaringType());
-
-
-            return superInterface;
-        }).collect(Collectors.toSet());*/
+        Set<CtTypeReference<?>> updatedSuperInterfaceSet = new HashSet<>();
 
         superInterfaces.forEach(ctTypeReference -> {
-            final CtTypeReference<?> clone = ctTypeReference.clone();
-            final String s = clone.toString().split("<")[0];
-
-            System.out.println("Interface Name = " + s);
-
+            final CtTypeReference<Object> reference = getFactory().createReference(ctTypeReference.getQualifiedName());
+            updatedSuperInterfaceSet.add(reference);
         });
+
+        classDef.setSuperInterfaces(updatedSuperInterfaceSet);
 
         // Unbounded Cases
         subClasses.forEach(
