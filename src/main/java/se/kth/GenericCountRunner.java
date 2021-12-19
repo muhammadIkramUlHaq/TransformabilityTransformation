@@ -2,10 +2,13 @@ package se.kth;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -13,7 +16,7 @@ public class GenericCountRunner {
 
     public static void main(String[] args) {
 
-        String projectName = "DiskLruCache";
+        String projectName = "Bukkit";
 
         final String[] configuration1 = {
                 "--with-imports",
@@ -39,6 +42,10 @@ public class GenericCountRunner {
         final Launcher launcher = new Launcher();
         launcher.setArgs(configuration);
         launcher.run();
+
+        final Launcher launcherTransformedClasses = new Launcher();
+        launcherTransformedClasses.setArgs(configuration1);
+        launcherTransformedClasses.run();
 /*
         final Launcher launcherTransformedClasses = new Launcher();
         launcherTransformedClasses.setArgs(configuration1);
@@ -53,7 +60,12 @@ public class GenericCountRunner {
         launcherTransformedVariables.run();*/
 
         final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
+        final List<CtType<?>> allInterface = launcher.getFactory().Interface().getAll();
+        System.out.println("Total Number of Interfaces =" + allInterface.size());
         getCountsForGenericRemoval(allClasses);
+
+        final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
+        getCountsForGenericRemoval(allClassesAfterFinalClassRemoval);
 /*
         final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
@@ -78,6 +90,16 @@ public class GenericCountRunner {
         final long genericClassCounter = allClasses
                 .stream()
                 .filter(ctType -> isNotEmpty(ctType.getFormalCtTypeParameters())).count();
+
+        final List<CtType<?>> collect = allClasses
+                .stream()
+                .filter(ctType -> isNotEmpty(ctType.getFormalCtTypeParameters())).collect(Collectors.toList());
+
+        for (CtType<?> ctClass : collect
+        ) {
+            System.out.println("class name  = " + ctClass.getSimpleName());;
+        }
+
         System.out.println("Generic Classes Count = " + genericClassCounter);
 
       /*  final long finalMethodCounter = allClasses.stream()

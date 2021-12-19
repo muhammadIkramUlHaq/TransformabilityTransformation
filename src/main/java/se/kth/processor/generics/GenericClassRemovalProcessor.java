@@ -99,15 +99,15 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
         // Find references of generic class from all classes and remove generic from it
         allClasses.forEach(
                 ctType -> {
-
-
                     final List<CtElement> elements = ctType.getElements(ctElement -> ctElement instanceof CtStatement);
 
                     // To handle right side expressions or with return statements
                     for (CtElement ctElement : elements
                     ) {
                         if (ctElement instanceof CtExpression) {
-                            if (((CtExpression<?>) ctElement).getType().getSimpleName().equals(currentClassName)) {
+                            final boolean notEmpty = isNotEmpty(((CtExpression<?>) ctElement).getType());
+                            ((CtExpression<?>) ctElement).getType();
+                            if (notEmpty && ((CtExpression<?>) ctElement).getType().getSimpleName().equals(currentClassName)) {
                                 ((CtExpression<?>) ctElement).setType(getFactory().createReference(classNameWithoutGenericParameter));
                             }
                         }
@@ -189,7 +189,7 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
 
         // https://hajsoftutorial.com/java-generic-interfaces/
         // https://turreta.com/2017/06/26/java-3-ways-to-implement-a-generic-interface/
-        System.out.println("Generics Class Type Removed!!!!!");
+        System.out.println(currentClassName + " : Generics Class Type Removed!!!!!");
 
     }
 
