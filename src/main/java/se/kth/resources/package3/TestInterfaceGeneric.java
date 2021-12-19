@@ -1,22 +1,14 @@
-package se.kth;
+package se.kth.resources.package3;
 
 // Java Program to illustrate Generic interfaces
 
 // Importing java input output classes
-import java.io.*;
 
-// An interface that extends Comparable
-interface MinMax<T extends Comparable<T> > {
-    // Declaring abstract methods
-    // Method with no body is abstract method
-    T min();
-    T max();
-}
 
 // Class 1 - Sub-class
 // class extending Comparable and implementing interface
 class MyClass2<T extends Comparable<T> >
-        implements MinMax<T> {
+        implements MinMaxTest<T> {
 
     // Member variable of 'MyClass' class
     T[] values;

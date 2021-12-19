@@ -21,6 +21,8 @@ class MySubclass<T, V> extends MyClass<T> {
         return ob2;
     }
 }
+
+
 public class TestGenericSubclass {
     public static void main(String args[]) {
         MySubclass<String, Integer> x = new MySubclass<String, Integer>("Value is: ", 99);
