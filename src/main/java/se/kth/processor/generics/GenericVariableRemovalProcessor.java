@@ -18,6 +18,8 @@ public class GenericVariableRemovalProcessor extends AbstractProcessor<CtVariabl
     @Override
     public void process(CtVariable<?> variable) {
         System.out.println("variable = " + variable);
+
+
         // Find static variable inside inner class- it must be final and not removed
 
     }

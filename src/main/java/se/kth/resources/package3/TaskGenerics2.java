@@ -1,7 +1,5 @@
 package se.kth.resources.package3;
 
-import se.kth.resources.package3.TaskGenerics1;
-
 public class TaskGenerics2<T,M> extends TaskGenerics1<T> implements TestGenericInterface1<T> {
 
     M[] val;
@@ -22,14 +20,23 @@ public class TaskGenerics2<T,M> extends TaskGenerics1<T> implements TestGenericI
         final int m;
         final int lm = 19;
         m = lm;
-        return new TaskGenerics1<T>(key);
+        return new TaskGenerics1<>(key);
+    }
+
+    public TaskGenerics1<Integer>[] methodGenericsArrayReturnTest(T key, int t) {
+        final int m;
+        final int lm = 19;
+        m = lm;
+        TaskGenerics1<T>[] array1 = new TaskGenerics1[]{null};
+        TaskGenerics1<Integer>[] array = new TaskGenerics1[0];
+        return array;
     }
 
     public M[] getVal() {
         return val;
     }
 
-    public <K, V> boolean compare(TaskGenerics1<T> p1, TaskGenerics1<T> p2) {
+    public <K, V> boolean compare(TaskGenerics1<T>[] p1, TaskGenerics2<T,M>[] p2) {
         return true;
     }
 

@@ -9,8 +9,8 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -25,16 +25,23 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
     public boolean isToBeProcessed(CtClass<?> classDec) {
         return isNotEmpty(classDec.getFormalCtTypeParameters());
     }
-    
+
     @Override
     public void process(CtClass<?> classDef) {
         final String currentClassName = classDef.getSimpleName();
+        final String classNameWithoutGenericParameter = currentClassName.split("<")[0];
 
         final List<CtType<?>> allClasses = getFactory().Class().getAll(true);
         final List<CtType<?>> allInterfaces = getFactory().Interface().getAll(true);
-        final List<CtType<?>> allClassesExceptCurrent = allClasses.stream().filter(ctType -> !ctType.getSimpleName().equals(currentClassName)).collect(Collectors.toList());
+        final List<CtType<?>> allClassesExceptCurrent = allClasses
+                .stream()
+                .filter(ctType -> !ctType.getSimpleName().equals(currentClassName))
+                .collect(Collectors.toList());
 
-        final List<CtType<?>> subClasses = allClassesExceptCurrent.stream().filter(ctType -> isNotEmpty(ctType.getSuperclass()) && ctType.getSuperclass().getSimpleName().equals(currentClassName)).collect(Collectors.toList());
+        final List<CtType<?>> subClasses = allClassesExceptCurrent
+                .stream()
+                .filter(ctType -> isNotEmpty(ctType.getSuperclass()) && ctType.getSuperclass().getSimpleName().equals(currentClassName))
+                .collect(Collectors.toList());
 
         final List<CtTypeParameter> formalCtTypeParameters = classDef.getFormalCtTypeParameters();
 
@@ -44,29 +51,18 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
         Iterator<CtTypeParameter> iterator = formalCtTypeParameters.iterator();
 
         // Loop to convert each type parameter to object
-        // Array type is not working
+        // Array type is working , Condition may be could be improved
         while (iterator.hasNext()) {
             CtTypeParameter ctTypeParameter = iterator.next();
 
             for (CtVariable ctVariable : variableTypes
             ) {
-                if (ctVariable.getType().getSimpleName().equals(ctTypeParameter.getSimpleName())) {
-                    ctVariable.setType(getFactory().createReference("Object"));
-                } // This else condition for contains could be improved
-                else if(ctVariable.getType().isArray() &&
-                        ctVariable.getType().getSimpleName().contains(ctTypeParameter.getSimpleName())){
-                    ctVariable.setType(getFactory().createReference("Object[]"));
-                }
+                replaceGenericType(ctTypeParameter.getSimpleName(), "Object", ctVariable);
             }
+
             for (CtMethod ctMethod : methods
             ) {
-                if (ctMethod.getType().getSimpleName().equals(ctTypeParameter.getSimpleName())) {
-                    ctMethod.setType(getFactory().createReference("Object"));
-                }  // This else condition for contains could be improved
-                else if(ctMethod.getType().isArray() &&
-                        ctMethod.getType().getSimpleName().contains(ctTypeParameter.getSimpleName())){
-                    ctMethod.setType(getFactory().createReference("Object[]"));
-                }
+                replaceGenericType(ctTypeParameter.getSimpleName(), "Object", ctMethod);
             }
 
             iterator.remove();
@@ -75,22 +71,10 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
 
         // Find references of generic class in all interfaces and remove generic from it
         allInterfaces.forEach(
-                ctType -> {
-                    final String classNameWithoutGenericParameter = currentClassName.split("<")[0];
+                interfaceIns -> {
+                    final List<CtElement> elements = interfaceIns.getElements(ctElement -> ctElement instanceof CtStatement);
 
-                    final List<CtElement> elements = ctType.getElements(ctElement -> ctElement instanceof CtStatement);
-
-                    // To handle right side expressions or with return statements
-                    for (CtElement ctElement : elements
-                    ) {
-                        if (ctElement instanceof CtExpression) {
-                            if (((CtExpression<?>) ctElement).getType().getSimpleName().equals(currentClassName)) {
-                                ((CtExpression<?>) ctElement).setType(getFactory().createReference(classNameWithoutGenericParameter));
-                            }
-                        }
-                    }
-
-                    final List<CtVariable> variables = ctType.getElements(ctElement -> ctElement instanceof CtVariable);
+                    final List<CtVariable> variables = interfaceIns.getElements(ctElement -> ctElement instanceof CtVariable);
 
                     for (CtVariable ctVariable : variables
                     ) {
@@ -100,7 +84,7 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
                         }
                     }
 
-                    final Set<CtMethod<?>> methods1 = ctType.getMethods();
+                    final Set<CtMethod<?>> methods1 = interfaceIns.getMethods();
 
                     for (CtMethod ctMethod : methods1
                     ) {
@@ -112,10 +96,10 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
                 }
         );
 
-        // Find references of generic class and remove generic from it
+        // Find references of generic class from all classes and remove generic from it
         allClasses.forEach(
                 ctType -> {
-                    final String classNameWithoutGenericParameter = currentClassName.split("<")[0];
+
 
                     final List<CtElement> elements = ctType.getElements(ctElement -> ctElement instanceof CtStatement);
 
@@ -134,25 +118,21 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
                     for (CtVariable ctVariable : variables
                     ) {
                         // variable assignment used within method Parameter & Declaration
-                        if (ctVariable.getType().getSimpleName().equals(currentClassName)) {
-                            ctVariable.setType(getFactory().createReference(classNameWithoutGenericParameter));
-                        }
+                        replaceGenericType(currentClassName, classNameWithoutGenericParameter, ctVariable);
                     }
 
                     final Set<CtMethod<?>> methods1 = ctType.getMethods();
 
                     for (CtMethod ctMethod : methods1
                     ) {
-                        if (ctMethod.getType().getSimpleName().equals(currentClassName)) {
-                            ctMethod.setType(getFactory().createReference(classNameWithoutGenericParameter));
-                        }
+                        replaceGenericType(currentClassName, classNameWithoutGenericParameter, ctMethod);
                     }
 
                 }
         );
         // Unbounded Cases
 
-        classDef.getSuperInterfaces().stream().map(ctTypeReference -> {
+      /*  classDef.getSuperInterfaces().stream().map(ctTypeReference -> {
             final CtInterface<?> superInterface = (CtInterface<?>) ctTypeReference.clone();
             final String superInterfaceNameWithoutGeneric = superInterface.toString().split("<")[0];
             System.out.println("super Interface 1 = " + superInterface.getQualifiedName());
@@ -161,13 +141,10 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
 
 
             System.out.println("super Interface 0 = " + superInterface.getDeclaringType());
-          
- 
-            return superInterface;
-        }).collect(Collectors.toSet());
-        
-       
 
+
+            return superInterface;
+        }).collect(Collectors.toSet());*/
 
 
         // Unbounded Cases
@@ -209,7 +186,30 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtClass<?>> 
         // https://www.baeldung.com/java-generics
 
         //https://www.baeldung.com/java-type-erasure
+
+        // https://hajsoftutorial.com/java-generic-interfaces/
+        // https://turreta.com/2017/06/26/java-3-ways-to-implement-a-generic-interface/
         System.out.println("Generics Class Type Removed!!!!!");
 
+    }
+
+    private void replaceGenericType(String type, String replaceType, CtMethod ctMethod) {
+        final String methodTypeName = ctMethod.getType().getSimpleName().split(Pattern.quote("["))[0];
+        if (ctMethod.getType().isArray() && methodTypeName.equals(type)) {
+            ctMethod.setType(getFactory().createArrayReference(replaceType));
+        }  // This else condition for contains could be improved
+        else if (methodTypeName.equals(type)) {
+            ctMethod.setType(getFactory().createReference(replaceType));
+        }
+    }
+
+    private void replaceGenericType(String type, String replaceType, CtVariable ctVariable) {
+        final String variableTypeName = ctVariable.getType().getSimpleName().split(Pattern.quote("["))[0];
+        if (ctVariable.getType().isArray() && variableTypeName.equals(type)) {
+            ctVariable.setType(getFactory().createArrayReference(replaceType));
+        } // This else condition could be improved
+        else if (variableTypeName.equals(type)) {
+            ctVariable.setType(getFactory().createReference(replaceType));
+        }
     }
 }
