@@ -4,23 +4,22 @@ import spoon.Launcher;
 
 public class GenericRemovalRunner {
     public static void main(String[] args) {
-      /*  final String[] configurationClasses;
+        final String[] configurationClasses;
         configurationClasses = new String[]{
-                "-i", "src/main/java/se/kth/resources/package3/TaskGenerics2.java",
+                "-i", "src/main/java/se/kth/resources/package3/",
                 "-o", "target/transformed/classes/",
-                "-p", "se.kth.processor.generics.GenericVariableRemovalProcessor"
+                "-p", "se.kth.processor.generics.GenericClassRemovalProcessor"
         };
 
         final Launcher launcherGenericClassesRemoval = new Launcher();
         launcherGenericClassesRemoval.setArgs(configurationClasses);
         launcherGenericClassesRemoval.run();
-*/
-        String projectName = "Bukkit";
+      /*  String projectName = "Bukkit";
         final String[] configurationClasses;
         configurationClasses = new String[]{
                 "-i", "repos/" + projectName + "/src/main/java/",
                 "-o", "target/transformed/classes/",
-                "-p", "se.kth.processor.generics.GenericInterfaceRemovalProcessor"
+                "-p", "se.kth.processor.generics.GenericClassRemovalProcessor"
         };
 
         final Launcher launcherGenericClassesRemoval = new Launcher();
