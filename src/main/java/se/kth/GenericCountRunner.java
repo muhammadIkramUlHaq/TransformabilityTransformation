@@ -5,6 +5,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public class GenericCountRunner {
 
     public static void main(String[] args) {
 
-        String projectName = "Bukkit";
+        String projectName = "commons-collections-master";
 
         final String[] configuration1 = {
                 "--with-imports",
@@ -35,7 +36,7 @@ public class GenericCountRunner {
 
         final String[] configuration = {
                 "--with-imports",
-                "-i", "repos/" + projectName + "/src/main/java/",
+                "-i", "projects/" + projectName + "/src/main/java/",
         };
 
 
@@ -46,7 +47,11 @@ public class GenericCountRunner {
         final Launcher launcherTransformedClasses = new Launcher();
         launcherTransformedClasses.setArgs(configuration1);
         launcherTransformedClasses.run();
-/*
+  /*
+        final Launcher launcherTransformedMethods = new Launcher();
+        launcherTransformedMethods.setArgs(configuration2);
+        launcherTransformedMethods.run();
+
         final Launcher launcherTransformedClasses = new Launcher();
         launcherTransformedClasses.setArgs(configuration1);
         launcherTransformedClasses.run();
@@ -60,12 +65,13 @@ public class GenericCountRunner {
         launcherTransformedVariables.run();*/
 
         final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
-        final List<CtType<?>> allInterface = launcher.getFactory().Interface().getAll();
-        System.out.println("Total Number of Interfaces =" + allInterface.size());
         getCountsForGenericRemoval(allClasses);
 
-        final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
-        getCountsForGenericRemoval(allClassesAfterFinalClassRemoval);
+        final List<CtType<?>> allClassesAfterGenericClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
+        getCountsForGenericRemoval(allClassesAfterGenericClassRemoval);
+
+       // final List<CtType<?>> allClassesAfterGenericMethodRemoval = launcherTransformedMethods.getFactory().Class().getAll();
+        //getCountsForGenericRemoval(allClassesAfterGenericMethodRemoval);
 /*
         final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
@@ -91,32 +97,23 @@ public class GenericCountRunner {
                 .stream()
                 .filter(ctType -> isNotEmpty(ctType.getFormalCtTypeParameters())).count();
 
-        final List<CtType<?>> collect = allClasses
-                .stream()
-                .filter(ctType -> isNotEmpty(ctType.getFormalCtTypeParameters())).collect(Collectors.toList());
-
-        for (CtType<?> ctClass : collect
-        ) {
-            System.out.println("class name  = " + ctClass.getSimpleName());;
-        }
-
         System.out.println("Generic Classes Count = " + genericClassCounter);
 
-      /*  final long finalMethodCounter = allClasses.stream()
+        final long genericMethodCounter = allClasses.stream()
                 .flatMap(ctType -> ctType.getMethods()
                         .stream()
-                        .filter(ctMethod -> ctMethod.isFinal()))
+                        .filter(ctMethod -> isNotEmpty(ctType.getFormalCtTypeParameters())))
                 .collect(Collectors.toList())
                 .stream().count();
-        System.out.println("Final Methods Count = " + finalMethodCounter);
+        System.out.println("Generic Methods Count = " + genericMethodCounter);
 
-        final long finalVariableCounter = allClasses.stream()
+        final long genericVariableCounter = allClasses.stream()
                 .flatMap(ctType -> {
                     final List<CtVariable> elements = ctType.getElements(ctElement -> ctElement instanceof CtVariable);
-                    return elements.stream().filter(variable -> variable.isFinal() && variable.toString().contains("final"));
+                    return elements.stream().filter(variable -> isNotEmpty(variable.getType()) && variable.getType().isGenerics());
                 }).collect(Collectors.toList())
                 .stream().count();
-        System.out.println("Final Variables Count = " + finalVariableCounter);*/
+        System.out.println("Final Variables Count = " + genericVariableCounter);
 
 
     }

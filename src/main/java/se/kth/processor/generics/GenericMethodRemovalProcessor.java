@@ -26,6 +26,7 @@ public class GenericMethodRemovalProcessor extends AbstractProcessor<CtMethod<?>
     @Override
     public void process(CtMethod<?> method) {
 
+        System.out.println("method = " + method.getSimpleName());
         final List<CtTypeParameter> formalCtTypeParameters = method.getFormalCtTypeParameters();
 
         Iterator<CtTypeParameter> iterator = formalCtTypeParameters.iterator();

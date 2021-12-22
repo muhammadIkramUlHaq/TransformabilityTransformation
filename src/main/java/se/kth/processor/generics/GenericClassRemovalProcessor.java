@@ -46,7 +46,7 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
                 .collect(Collectors.toList());
 
         final Set<CtTypeReference<?>> superInterfaces = classDef.getSuperInterfaces();
-        
+
         final List<CtTypeParameter> formalCtTypeParameters = classDef.getFormalCtTypeParameters();
 
         final List<CtVariable> variableTypes = classDef.getElements(ctElement -> ctElement instanceof CtVariable);
@@ -102,6 +102,19 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
 
                     for (CtMethod ctMethod : methods1
                     ) {
+
+                        final List<CtTypeParameter> formalCtTypeParametersForMethod = ctMethod.getFormalCtTypeParameters();
+
+                        if (isNotEmpty(formalCtTypeParametersForMethod)) {
+                            Iterator<CtTypeParameter> iteratorForMethods = formalCtTypeParametersForMethod.iterator();
+                            while (iteratorForMethods.hasNext()) {
+                                CtTypeParameter ctTypeParameter = iteratorForMethods.next();
+                                iteratorForMethods.remove();
+                                ctMethod.removeFormalCtTypeParameter(ctTypeParameter);
+                            }
+
+                        }
+                        
                         replaceGenericType(currentClassName, currentClassNameWithoutGenericParameter, ctMethod);
                     }
 
@@ -157,6 +170,8 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
 
         // https://hajsoftutorial.com/java-generic-interfaces/
         // https://turreta.com/2017/06/26/java-3-ways-to-implement-a-generic-interface/
+
+        // https://www.geeksforgeeks.org/bounded-types-generics-java/
         System.out.println(currentClassName + " : Generics Class Type Removed!!!!!");
 
     }
