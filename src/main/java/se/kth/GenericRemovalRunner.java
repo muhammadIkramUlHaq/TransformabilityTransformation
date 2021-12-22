@@ -4,7 +4,7 @@ import spoon.Launcher;
 
 public class GenericRemovalRunner {
     public static void main(String[] args) {
-    /*    final String[] configurationClasses;
+        final String[] configurationClasses;
         configurationClasses = new String[]{
                 "-i", "src/main/java/se/kth/resources/package3",
                 "-o", "target/transformed/classes/",
@@ -13,8 +13,8 @@ public class GenericRemovalRunner {
 
         final Launcher launcherGenericClassesRemoval = new Launcher();
         launcherGenericClassesRemoval.setArgs(configurationClasses);
-        launcherGenericClassesRemoval.run();*/
-       String projectName = "commons-collections-master";
+        launcherGenericClassesRemoval.run();
+        /*String projectName = "commons-collections-master";
         final String[] configurationClasses;
         configurationClasses = new String[]{
                 "-i", "projects/" + projectName + "/src/main/java/",
@@ -24,7 +24,7 @@ public class GenericRemovalRunner {
 
         final Launcher launcherGenericClassesRemoval = new Launcher();
         launcherGenericClassesRemoval.setArgs(configurationClasses);
-        launcherGenericClassesRemoval.run();
+        launcherGenericClassesRemoval.run();     */
 
 
      /*   final String[] configurationMethods = {

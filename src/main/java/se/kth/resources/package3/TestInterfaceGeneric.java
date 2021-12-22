@@ -19,6 +19,11 @@ class MyClass2<T extends Comparable<T> >
     // Now, defining min() and max() methods
     // for MimMax interface computation
 
+    public static <T extends Comparable<T>> void printArray(T[] array) {
+        for (T element : array) {
+            System.out.printf("%s ", element);
+        }
+    }
     // Defining abstract min() method
     public T min()
     {
@@ -73,6 +78,8 @@ class TestInterfaceGeneric {
 
         // printing the maximum value from array elements
         System.out.println("Maximum value: " + obj1.max());
+
+        obj1.printArray(arr);
     }
 }
 

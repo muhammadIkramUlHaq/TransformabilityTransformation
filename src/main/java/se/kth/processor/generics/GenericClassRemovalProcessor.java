@@ -58,15 +58,22 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
         // Array type is working , Condition may be could be improved
         while (iterator.hasNext()) {
             CtTypeParameter ctTypeParameter = iterator.next();
+            String replaceType;
+            if (isNotEmpty(ctTypeParameter.getSuperclass())) {
+                replaceType = ctTypeParameter.getSuperclass().getSimpleName();
+            } else {
+                replaceType = "Object";
+            }
+
 
             for (CtVariable ctVariable : variableTypes
             ) {
-                replaceGenericType(ctTypeParameter.getSimpleName(), "Object", ctVariable);
+                replaceGenericType(ctTypeParameter.getSimpleName(), replaceType, ctVariable);
             }
 
             for (CtMethod ctMethod : methods
             ) {
-                replaceGenericType(ctTypeParameter.getSimpleName(), "Object", ctMethod);
+                replaceGenericType(ctTypeParameter.getSimpleName(), replaceType, ctMethod);
             }
 
             iterator.remove();
@@ -114,14 +121,14 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
                             }
 
                         }
-                        
+
                         replaceGenericType(currentClassName, currentClassNameWithoutGenericParameter, ctMethod);
                     }
 
                 }
         );
-        // Unbounded Cases
 
+        // Unbounded Cases
         Set<CtTypeReference<?>> updatedSuperInterfaceSet = new HashSet<>();
 
         superInterfaces.forEach(ctTypeReference -> {
@@ -136,13 +143,12 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
                 subClass -> {
                     final CtTypeReference<?> superclass = subClass.getSuperclass().clone();
                     final String supperClassWithoutTypeParameter = superclass.getQualifiedName();
-                    // Fix interfaces
                     subClass.setSuperclass(getFactory().createReference(supperClassWithoutTypeParameter));
                 }
         );
 
 
-        /*    This use case is left
+        /*    This use case is done as well
                     class GenericSuperClass<T extends Number>
             {
                 //Generic super class with bounded type parameter
