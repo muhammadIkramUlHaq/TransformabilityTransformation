@@ -12,54 +12,74 @@ import java.util.stream.Collectors;
 public class FinalCountRunner {
     public static void main(String[] args) {
 
-        String projectName = "DiskLruCache";
+        String projectName = "Bukkit";
 
-        final String[] configuration1 = {
+        final String[] configurationForTransformedClasses = {
                 "--with-imports",
                 "-i", "target/transformed/classes/",
         };
 
-        final String[] configuration2 = {
+        final String[] configurationForTransformedMethods = {
                 "--with-imports",
                 "-i", "target/transformed/methods/",
         };
 
-        final String[] configuration3 = {
+        final String[] configurationForTransformedVariables = {
                 "--with-imports",
                 "-i", "target/transformed/variables/",
         };
 
-        final String[] configuration = {
+        final String[] configurationForOriginalCode = {
                 "--with-imports",
                 "-i", "repos/" + projectName + "/src/main/java/",
         };
 
 
         final Launcher launcher = new Launcher();
-        launcher.setArgs(configuration);
+        launcher.setArgs(configurationForOriginalCode);
         launcher.run();
-
+/*
         final Launcher launcherTransformedClasses = new Launcher();
-        launcherTransformedClasses.setArgs(configuration1);
+        launcherTransformedClasses.setArgs(configurationForTransformedClasses);
         launcherTransformedClasses.run();
 
         final Launcher launcherTransformedMethods = new Launcher();
-        launcherTransformedMethods.setArgs(configuration2);
+        launcherTransformedMethods.setArgs(configurationForTransformedMethods);
         launcherTransformedMethods.run();
 
         final Launcher launcherTransformedVariables = new Launcher();
-        launcherTransformedVariables.setArgs(configuration3);
-        launcherTransformedVariables.run();
+        launcherTransformedVariables.setArgs(configurationForTransformedVariables);
+        launcherTransformedVariables.run();*/
 
+        final String[] configurationForTransformedFinal = {
+                "--with-imports",
+                "-i", "target/transformed/final/",
+        };
+
+        final Launcher launcherTransformedFinal = new Launcher();
+        launcherTransformedFinal.setArgs(configurationForTransformedFinal);
+        launcherTransformedFinal.run();
+
+
+        final Launcher launcherTransformedVariables = new Launcher();
+        launcherTransformedVariables.setArgs(configurationForTransformedVariables);
+        launcherTransformedVariables.run();
+        
         final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClasses);
 
-        final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
+    /*    final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
 
         final List<CtType<?>> allClassesAfterFinalMethodRemoval = launcherTransformedMethods.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalMethodRemoval);
 
+        final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);*/
+
+        final List<CtType<?>> allAfterFinalVariableRemoval = launcherTransformedFinal.getFactory().Class().getAll();
+        getCountsForFinalRemoval(allAfterFinalVariableRemoval);
+        
         final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
         getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);
     }
