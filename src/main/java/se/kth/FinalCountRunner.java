@@ -2,86 +2,46 @@ package se.kth;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static se.kth.shared.Constants.PROJECT_UNDER_ANALYSIS;
+
 public class FinalCountRunner {
     public static void main(String[] args) {
 
-        String projectName = "Bukkit";
-
-        final String[] configurationForTransformedClasses = {
-                "--with-imports",
-                "-i", "target/transformed/classes/",
-        };
-
-        final String[] configurationForTransformedMethods = {
-                "--with-imports",
-                "-i", "target/transformed/methods/",
-        };
-
-        final String[] configurationForTransformedVariables = {
-                "--with-imports",
-                "-i", "target/transformed/variables/",
-        };
+        String projectName = PROJECT_UNDER_ANALYSIS;
 
         final String[] configurationForOriginalCode = {
                 "--with-imports",
                 "-i", "repos/" + projectName + "/src/main/java/",
         };
 
+        final String[] configurationForTransformedFinal = {
+                "--with-imports",
+                "-i", "target/transformed/final/" + projectName + "/",
+        };
 
+        
         final Launcher launcher = new Launcher();
         launcher.setArgs(configurationForOriginalCode);
         launcher.run();
-/*
-        final Launcher launcherTransformedClasses = new Launcher();
-        launcherTransformedClasses.setArgs(configurationForTransformedClasses);
-        launcherTransformedClasses.run();
-
-        final Launcher launcherTransformedMethods = new Launcher();
-        launcherTransformedMethods.setArgs(configurationForTransformedMethods);
-        launcherTransformedMethods.run();
-
-        final Launcher launcherTransformedVariables = new Launcher();
-        launcherTransformedVariables.setArgs(configurationForTransformedVariables);
-        launcherTransformedVariables.run();*/
-
-        final String[] configurationForTransformedFinal = {
-                "--with-imports",
-                "-i", "target/transformed/final/",
-        };
-
+        
         final Launcher launcherTransformedFinal = new Launcher();
         launcherTransformedFinal.setArgs(configurationForTransformedFinal);
         launcherTransformedFinal.run();
-
-
-        final Launcher launcherTransformedVariables = new Launcher();
-        launcherTransformedVariables.setArgs(configurationForTransformedVariables);
-        launcherTransformedVariables.run();
         
         final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
+        System.out.println(" <--------- Before Processing -------->");
         getCountsForFinalRemoval(allClasses);
 
-    /*    final List<CtType<?>> allClassesAfterFinalClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClassesAfterFinalClassRemoval);
-
-        final List<CtType<?>> allClassesAfterFinalMethodRemoval = launcherTransformedMethods.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClassesAfterFinalMethodRemoval);
-
-        final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);*/
-
-        final List<CtType<?>> allAfterFinalVariableRemoval = launcherTransformedFinal.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allAfterFinalVariableRemoval);
+        final List<CtType<?>> allAfterFinalRemoval = launcherTransformedFinal.getFactory().Class().getAll();
+        System.out.println(" <--------- After Processing -------->");
+        getCountsForFinalRemoval(allAfterFinalRemoval);
         
-        final List<CtType<?>> allClassesAfterFinalVariableRemoval = launcherTransformedVariables.getFactory().Class().getAll();
-        getCountsForFinalRemoval(allClassesAfterFinalVariableRemoval);
     }
 
     private static void getCountsForFinalRemoval(List<CtType<?>> allClasses) {

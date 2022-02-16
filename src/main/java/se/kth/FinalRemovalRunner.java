@@ -2,56 +2,15 @@ package se.kth;
 
 import spoon.Launcher;
 
+import static se.kth.shared.Constants.PROJECT_UNDER_ANALYSIS;
+
 public class FinalRemovalRunner {
     public static void main(String[] args) {
-        String projectName = "Bukkit";
+        String projectName = PROJECT_UNDER_ANALYSIS;
 
-      /*  final String[] configurationClasses = new String[]{
-                "-i", "repos/"+ projectName + "/src/main/java/",
-                "-o", "target/transformed/classes/",
-                "-p", "se.kth.processor.finals.FinalClassRemovalProcessor" 
-        };
-
-        final String[] configurationMethods = {
-                "--with-imports",
-                "-i", "repos/"+ projectName + "/src/main/java/",
-                "-o", "target/transformed/methods/",
-                "-p", "se.kth.processor.finals.FinalMethodRemovalProcessor"
-        };
-
-        final String[] configurationVariables = {
-                "--with-imports",
-                "-i", "repos/"+ projectName + "/src/main/java/",
-                "-o", "target/transformed/variables/",
-                "-p", "se.kth.processor.finals.FinalVariableRemovalProcessor"
-        };
-
-        final Launcher launcherFinalClassesRemoval = new Launcher();
-        launcherFinalClassesRemoval.setArgs(configurationClasses);
-        launcherFinalClassesRemoval.run();
-
-        final Launcher launcherFinalMethodsRemoval = new Launcher();
-        launcherFinalMethodsRemoval.setArgs(configurationMethods);
-        launcherFinalMethodsRemoval.run();
-
-        final Launcher launcherFinalVariablesRemoval = new Launcher();
-        launcherFinalVariablesRemoval.setArgs(configurationVariables);
-        launcherFinalVariablesRemoval.run();*/
-
-        final String[] configurationVariables = {
-                "--with-imports",
-                "-i", "repos/"+ projectName + "/src/main/java/",
-                "-o", "target/transformed/variables/",
-                "-p", "se.kth.processor.finals.FinalVariableRemovalProcessor"
-        };
-
-        final Launcher launcherFinalVariablesRemoval = new Launcher();
-        launcherFinalVariablesRemoval.setArgs(configurationVariables);
-        launcherFinalVariablesRemoval.run();
-        
         final String[] configurationFinal = new String[]{
-                "-i", "repos/"+ projectName + "/src/main/java/",
-                "-o", "target/transformed/final/",
+                "-i", "repos/" + projectName + "/src/main/java/",
+                "-o", "target/transformed/final/" + projectName + "/",
                 "-p", "se.kth.processor.finals.FinalRemovalProcessor"
         };
 
