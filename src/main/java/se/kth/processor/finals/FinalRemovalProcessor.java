@@ -35,7 +35,7 @@ public class FinalRemovalProcessor extends AbstractProcessor<CtClass<?>> {
         for (CtMethod method : methods
         ) {
             if (method.isFinal()) {
-                // Always remove final keyword in case of class
+                // Always remove final keyword in case of method
                 method.removeModifier(ModifierKind.FINAL);
             }
         }
