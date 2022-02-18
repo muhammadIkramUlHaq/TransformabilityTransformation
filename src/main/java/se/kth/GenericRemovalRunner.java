@@ -2,18 +2,35 @@ package se.kth;
 
 import spoon.Launcher;
 
+import static se.kth.shared.Constants.PROJECT_UNDER_ANALYSIS;
+
 public class GenericRemovalRunner {
     public static void main(String[] args) {
-        final String[] configurationClasses;
+
+        String projectName = PROJECT_UNDER_ANALYSIS;
+
+        final String[] configurationGenerics = new String[]{
+                "-i", "repos/" + projectName + "/src/main/java/",
+                "-o", "target/transformed/generics/" + projectName + "/",
+                "-p", "se.kth.processor.generics.GenericRemovalProcessor"
+        };
+
+        final Launcher launcherFinalRemoval = new Launcher();
+        launcherFinalRemoval.setArgs(configurationGenerics);
+        launcherFinalRemoval.run();
+        
+      /*  final String[] configurationClasses;
         configurationClasses = new String[]{
+                "--with-imports",
                 "-i", "src/main/java/se/kth/resources/package3",
                 "-o", "target/transformed/classes/",
-                "-p", "se.kth.processor.generics.GenericClassRemovalProcessor"
+                "-p", "se.kth.processor.generics.GenericRemovalProcessor"
         };
 
         final Launcher launcherGenericClassesRemoval = new Launcher();
         launcherGenericClassesRemoval.setArgs(configurationClasses);
-        launcherGenericClassesRemoval.run();
+        launcherGenericClassesRemoval.run();*/
+
         /*String projectName = "commons-collections-master";
         final String[] configurationClasses;
         configurationClasses = new String[]{
@@ -74,5 +91,6 @@ public class GenericRemovalRunner {
         launcherGenericVariablesRemoval.run();
 
         System.out.println(" Successfully Run All processor on complete porject");*/
+        System.out.println(" Successfully Run processor on complete porject");
     }
 }

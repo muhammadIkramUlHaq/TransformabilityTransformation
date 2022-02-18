@@ -20,11 +20,11 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
  *
  * @author Muhammad Ikram Ul Haq
  */
-public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
+public class GenericRemovalProcessor extends AbstractProcessor<CtType<?>> {
 
     @Override
     public boolean isToBeProcessed(CtType<?> classDec) {
-        return isNotEmpty(classDec.getFormalCtTypeParameters());
+        return classDec.getFormalCtTypeParameters().size() > 0 ;
     }
 
     @Override
@@ -105,9 +105,9 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
                         replaceGenericType(currentClassName, currentClassNameWithoutGenericParameter, ctVariable);
                     }
 
-                    final Set<CtMethod<?>> methods1 = ctType.getMethods();
+                    final Set<CtMethod<?>> classMethods = ctType.getMethods();
 
-                    for (CtMethod ctMethod : methods1
+                    for (CtMethod ctMethod : classMethods
                     ) {
 
                         final List<CtTypeParameter> formalCtTypeParametersForMethod = ctMethod.getFormalCtTypeParameters();
@@ -178,7 +178,6 @@ public class GenericClassRemovalProcessor extends AbstractProcessor<CtType<?>> {
         // https://turreta.com/2017/06/26/java-3-ways-to-implement-a-generic-interface/
 
         // https://www.geeksforgeeks.org/bounded-types-generics-java/
-        System.out.println(currentClassName + " : Generics Class Type Removed!!!!!");
 
     }
 

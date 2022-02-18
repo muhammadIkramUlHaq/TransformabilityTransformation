@@ -2,50 +2,37 @@ package se.kth;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static se.kth.shared.Constants.PROJECT_UNDER_ANALYSIS;
 
 public class GenericCountRunner {
 
     public static void main(String[] args) {
 
-        String projectName = "commons-collections-master";
+        String projectName = PROJECT_UNDER_ANALYSIS;
 
-        final String[] configuration1 = {
+        final String[] configurationForOriginalCode = {
                 "--with-imports",
-                "-i", "target/transformed/classes/",
+                "-i", "repos/" + projectName + "/src/main/java/",
         };
 
-        final String[] configuration2 = {
+        final String[] configurationForTransformedGenerics = {
                 "--with-imports",
-                "-i", "target/transformed/methods/",
+                "-i", "target/transformed/generics/" + projectName + "/",
         };
 
-        final String[] configuration3 = {
-                "--with-imports",
-                "-i", "target/transformed/variables/",
-        };
-
-        final String[] configuration = {
-                "--with-imports",
-                "-i", "projects/" + projectName + "/src/main/java/",
-        };
-
-
-        final Launcher launcher = new Launcher();
-        launcher.setArgs(configuration);
-        launcher.run();
+        final Launcher launcherOriginalCode = new Launcher();
+        launcherOriginalCode.setArgs(configurationForOriginalCode);
+        launcherOriginalCode.run();
 
         final Launcher launcherTransformedClasses = new Launcher();
-        launcherTransformedClasses.setArgs(configuration1);
+        launcherTransformedClasses.setArgs(configurationForTransformedGenerics);
         launcherTransformedClasses.run();
   /*
         final Launcher launcherTransformedMethods = new Launcher();
@@ -64,10 +51,12 @@ public class GenericCountRunner {
         launcherTransformedVariables.setArgs(configuration3);
         launcherTransformedVariables.run();*/
 
-        final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
+        final List<CtType<?>> allClasses = launcherOriginalCode.getFactory().Class().getAll();
+        System.out.println(" <--------- Before Processing -------->");
         getCountsForGenericRemoval(allClasses);
 
         final List<CtType<?>> allClassesAfterGenericClassRemoval = launcherTransformedClasses.getFactory().Class().getAll();
+        System.out.println(" <--------- After Processing -------->");
         getCountsForGenericRemoval(allClassesAfterGenericClassRemoval);
 
        // final List<CtType<?>> allClassesAfterGenericMethodRemoval = launcherTransformedMethods.getFactory().Class().getAll();
@@ -113,7 +102,7 @@ public class GenericCountRunner {
                     return elements.stream().filter(variable -> isNotEmpty(variable.getType()) && variable.getType().isGenerics());
                 }).collect(Collectors.toList())
                 .stream().count();
-        System.out.println("Final Variables Count = " + genericVariableCounter);
+        System.out.println("Generic Variables Count = " + genericVariableCounter);
 
 
     }

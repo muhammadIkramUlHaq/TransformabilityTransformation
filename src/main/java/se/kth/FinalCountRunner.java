@@ -26,15 +26,15 @@ public class FinalCountRunner {
         };
 
         
-        final Launcher launcher = new Launcher();
-        launcher.setArgs(configurationForOriginalCode);
-        launcher.run();
+        final Launcher launcherOriginalCode = new Launcher();
+        launcherOriginalCode.setArgs(configurationForOriginalCode);
+        launcherOriginalCode.run();
         
         final Launcher launcherTransformedFinal = new Launcher();
         launcherTransformedFinal.setArgs(configurationForTransformedFinal);
         launcherTransformedFinal.run();
         
-        final List<CtType<?>> allClasses = launcher.getFactory().Class().getAll();
+        final List<CtType<?>> allClasses = launcherOriginalCode.getFactory().Class().getAll();
         System.out.println(" <--------- Before Processing -------->");
         getCountsForFinalRemoval(allClasses);
 

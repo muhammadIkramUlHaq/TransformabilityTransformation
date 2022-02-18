@@ -9,6 +9,7 @@ public class FinalRemovalRunner {
         String projectName = PROJECT_UNDER_ANALYSIS;
 
         final String[] configurationFinal = new String[]{
+                "--with-imports",
                 "-i", "repos/" + projectName + "/src/main/java/",
                 "-o", "target/transformed/final/" + projectName + "/",
                 "-p", "se.kth.processor.finals.FinalRemovalProcessor"
